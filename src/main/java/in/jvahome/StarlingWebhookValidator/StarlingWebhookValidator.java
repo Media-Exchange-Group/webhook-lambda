@@ -31,16 +31,16 @@ public class StarlingWebhookValidator implements RequestHandler <String[], Strin
 				  return "Bad webhook signature";
 				}
 			} catch (InvalidKeyException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Invalid key");
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
+				System.out.println("No such algorithm");
 				e.printStackTrace();
 			} catch (InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Invalid key sec");
 				e.printStackTrace();
 			} catch (SignatureException e) {
-				// TODO Auto-generated catch block
+				System.out.println("Invalid signature");
 				e.printStackTrace();
 			}
 			return null;
@@ -48,8 +48,11 @@ public class StarlingWebhookValidator implements RequestHandler <String[], Strin
 	
 	  static boolean isValid(String publicKey, String signature, String jsonPayload)
 		      throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
-			  System.out.println("Public key: "+publicKey.substring(0, 45)+"...");
-			  System.out.println("Signature: "+signature.substring(0, 45)+"...");
+//			  System.out.println("Public key: "+publicKey);
+//			  System.out.println("Signature: "+signature);
+//			  System.out.println("Payload: "+jsonPayload);
+			  System.out.println("Public key: "+publicKey.substring(0, 75)+"...");
+			  System.out.println("Signature: "+signature.substring(0, 75)+"...");
 			  System.out.println("Payload: "+jsonPayload);
 
 		    X509EncodedKeySpec x509publicKey = new X509EncodedKeySpec(Base64.getDecoder().decode(publicKey));
@@ -58,7 +61,15 @@ public class StarlingWebhookValidator implements RequestHandler <String[], Strin
 		    signAlg.initVerify(KeyFactory.getInstance("RSA").generatePublic(x509publicKey));
 		    signAlg.update(jsonPayload.getBytes());
 
-		    return signAlg.verify(Base64.getDecoder().decode(signature));
+			boolean validationResult = signAlg.verify(Base64.getDecoder().decode(signature));
+
+			if (validationResult) {
+				System.out.println("Good webhook signature");
+			} else {
+				System.out.println("Bad webhook signature");
+			}
+
+		    return validationResult;
 		  }	
 	
 }
